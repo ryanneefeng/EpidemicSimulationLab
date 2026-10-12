@@ -1,8 +1,15 @@
 .venv/
+.vscode/
 __pycache__/
 *.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.coverage
+htmlcov/
 .env
 .env.*
+scenarios/custom.json
 data/raw/*
 !data/raw/.gitkeep
 results/*
