@@ -2,6 +2,8 @@
 
 A configurable epidemic and vaccine-allocation modeling project. Age groups, disease parameters, demographics, contact data, and vaccination strategies will be editable. The midterm paper is related prior work; its choices are not fixed requirements.
 
+Start with [the beginner walkthrough](docs/START_HERE.md) for an explanation of the folders, environment scripts, and output.
+
 ## Day 1 in VS Code
 
 1. Choose **File > Open Folder** and open this repository.
@@ -24,13 +26,14 @@ Python 3.14.5 was used to check this starter. No third-party packages are needed
 Expected output includes:
 
 ```text
-Simulated population: 200
+Loaded settings. No epidemic has been simulated yet.
+Planned population: 200 people
 Age groups: 0-19, 20-39, 40-59, 60-79, 80+
 Transmission per active encounter: 4%
 Death probability per infection: 5%
 ```
 
-This first script loads and checks settings. The disease engine, vaccine allocation, data import, and interactive interface come in later increments.
+This first script loads and checks settings. Transmission applies to an encounter between an infectious person and a susceptible person. Mortality applies to someone who becomes infected. Neither percentage is an observed result from a simulation yet. The disease engine, vaccine allocation, data import, and interactive interface come in later increments.
 
 ## First exercise
 
@@ -64,6 +67,7 @@ Code, scenario files, and documentation belong in Git. Local environments, raw d
 - `day1.py`: runnable scenario reader.
 - `scenarios/`: editable inputs.
 - `docs/PROJECT_PLAN.md`: milestones and modeling assumptions.
+- `docs/START_HERE.md`: beginner guide to the files, inputs, and output.
 - `docs/SESSION_LOG.md`: progress and exercises.
 - `docs/DATA_SOURCES.md`: contact and demographic import requirements.
 - `docs/ATTRIBUTION.md`: original team and new contributions.
