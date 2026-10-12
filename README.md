@@ -51,6 +51,6 @@ The old Day 1 reader, duplicate walkthrough/progress documents, and empty data/o
 
 Checks cover population totals, age distributions, initial infection limits, repeatable seeds, independent randomness, and invalid inputs. Browser checks cover creation, custom settings, count errors, reset, equal splitting, and scenario download.
 
-Each assistant change to a project file is verified, committed separately with a short relevant message, and pushed to https://github.com/ryanneefeng/epidemic-scenario-lab . Local ignored settings stay on the development machine.
+Related changes are verified together, then committed at substantial milestones with a short relevant message and pushed to https://github.com/ryanneefeng/epidemic-scenario-lab . Local ignored settings stay on the development machine.
 
 Next: define disease timers and one synchronous disease-spread step. See [the project plan](docs/PROJECT_PLAN.md), [data sources](docs/DATA_SOURCES.md), and [attribution](docs/ATTRIBUTION.md). The midterm paper is reference material; its parameters and age groups are not requirements for this project.

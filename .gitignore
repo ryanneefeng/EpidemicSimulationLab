@@ -10,7 +10,5 @@ htmlcov/
 .env
 .env.*
 scenarios/custom.json
-data/raw/*
-!data/raw/.gitkeep
-results/*
-!results/.gitkeep
+data/raw/
+results/

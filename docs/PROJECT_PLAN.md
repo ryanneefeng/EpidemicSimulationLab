@@ -6,17 +6,17 @@ Updated October 12, 2026. Day 1 of approximately 40 working sessions over 20 act
 
 Build a configurable epidemic and vaccine-allocation scenario tool, intended for epidemiologists and public-sector analysts. The midterm is related prior work only. Neither its age groups nor its disease parameters are inherited requirements.
 
-Keep disease scenarios, geography/demographics, contact assumptions, vaccination strategies, and simulation/display settings separate. Editable settings first live in versioned configuration files; interface controls will use the same validated inputs. Define transmission as a probability per active encounter and mortality as a probability per infection. Permit 0-100% values, including severe hypothetical scenarios. Later allow age-specific probabilities, time-to-death assumptions, durations, vaccine protection, and waning.
+Keep disease scenarios, geography/demographics, contact assumptions, vaccination strategies, and simulation/display settings separate. Choose settings in the browser form and download them as JSON. Versioned examples use the same validation. Define transmission as a probability per active encounter and mortality as a probability per infection. Permit 0-100% values, including severe hypothetical scenarios. Later allow age-specific probabilities, time-to-death assumptions, durations, vaccine protection, and waning.
 
 ## Milestones
 
 | Weeks | Work | Useful result |
 | --- | --- | --- |
-| 1-2 | VS Code/Git setup, scenario inputs, person-state/event specification | Editable inputs and a tiny traceable example |
+| 1-2 | VS Code/Git setup, browser inputs, person records, event specification | Editable inputs and a tiny traceable example |
 | 3-5 | Demographic/contact file import, metadata, age-bin aggregation | One validated country contact preset and locality demographic input |
 | 6-8 | Stochastic epidemic engine, vaccine supply and basic allocations | Reproducible static-network experiments |
 | 9-12 | Persistent relationships, recurring encounters, temporary edges | Changing network with measured mixing and repetition |
-| 13-15 | Browser interface and visual controls | Play/pause/reset, scenario controls, network and curves |
+| 13-15 | Extend the browser with simulation controls and plots | Play/pause/reset, network and curves |
 | 16-18 | Repeated-run comparisons and sensitivity | Infection/death distributions; documented intervention tradeoffs |
 | 19-20 | Validation, explanations, refinements, buffer | First useful research prototype with reproducible runs |
 
@@ -38,17 +38,24 @@ Aim for a tiny disease simulation earlier than week 6 while the import pipeline 
 - Reviewed the original paper and appendix; preserved team attribution.
 - Revised scope after the user clarified configurable disease/age inputs and geographic importing as central requirements.
 - Confirmed Python 3.14.5, Git, VS Code, and the Python extension are installed.
-- Created a small configuration reader and documentation; local environment and Git verification are recorded in SESSION_LOG.md.
+- Added a local browser form for editable population, age groups, disease probabilities, and random seed.
+- Created individual person records and reproducible initial infectious selections; checked population accounting and invalid inputs.
+- Verified the browser form, error messages, reset, equal splitting, and scenario download.
+- Consolidated setup instructions in README; ignored local editor settings and generated folders. Git records progress at substantial milestones.
 - Inspected the Prem contact repository structure; no data imported yet.
 
 ## Current assumptions and questions
 
-The example JSON is invented. Its five age groups, 4% per-encounter transmission, and 5% mortality are editable demonstrations, not empirical estimates. It does not yet specify age shares, duration distributions, or vaccines. Source age boundaries will constrain supported data aggregation. Mortality's timing and vaccine eligibility must be specified before the engine is implemented.
+The example JSON is invented. Its five equally populated age groups, 4% per-encounter transmission, and 5% mortality are editable demonstrations, not empirical estimates. Users choose age-group counts directly; real demographic importing comes later. Disease durations, mortality timing, and vaccine eligibility still need specification. Source age boundaries will constrain supported data aggregation.
+
+The current model creates day 0 only. Transmission and mortality are saved settings; no disease events have advanced. The form supports up to 10,000 people for this prototype.
 
 Public repository: https://github.com/ryanneefeng/epidemic-scenario-lab . The working folder is C:\endemic-scenerio-lab. Python experience is unspecified, so explain code from basics.
 
 ## Run and next task
 
-From the repository: `.\.venv\Scripts\python.exe day1.py` (Windows). See README for environment recreation and VS Code interpreter selection.
+From the repository: `.\.venv\Scripts\python.exe app.py` (Windows), then open http://127.0.0.1:8000 . See README for environment recreation and VS Code interpreter selection.
 
-Learner Day 1 task: run the reader, change 0.04 to 0.20 and 0.05 to 0.50, explain the percentages and units, then commit the change. Day 2: hand-trace S/E/I/R/D progression for 20 people on a fixed graph, then implement one synchronous step. Data milestone next: inspect one real contact file before writing an importer.
+Current learning task: create 20 people in the browser, choose age-group counts totaling 20, and set three initially infectious people. Confirm 17 susceptible and three infectious. Change transmission to 20% and mortality to 50%; explain why the initial totals stay the same.
+
+Next: define disease timers and hand-trace S/E/I/R/D progression on a fixed graph, then implement one synchronous step. Data milestone: inspect one real contact file before writing an importer.
