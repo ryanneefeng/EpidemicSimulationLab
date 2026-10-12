@@ -1,74 +1,56 @@
 # Epidemic Scenario Lab
 
-A configurable epidemic and vaccine-allocation modeling project. Age groups, disease parameters, demographics, contact data, and vaccination strategies will be editable. The midterm paper is related prior work; its choices are not fixed requirements.
+A configurable epidemic and vaccine-allocation modeling project. Choose disease and population settings in a browser. Develop the mathematics in small, understandable increments.
 
-Start with [the beginner walkthrough](docs/START_HERE.md) for an explanation of the folders, environment scripts, and output.
+## Run in VS Code
 
-## Day 1 in VS Code
-
-1. Choose **File > Open Folder** and open this repository.
-2. Choose **Terminal > New Terminal**.
-3. Create a local Python environment:
+Open this folder and choose **Terminal > New Terminal**. Run:
 
 ```powershell
-py -V:3.14 -m venv .venv
+.\.venv\Scripts\python.exe app.py
 ```
 
-4. Press **Ctrl+Shift+P**, choose **Python: Select Interpreter**, and select `.venv\Scripts\python.exe`.
-5. Run:
+Open **http://127.0.0.1:8000** in your browser. Keep the terminal running; **Ctrl+C** stops the app. If the port is occupied, run `app.py --port 8001` and use the printed address.
+
+The environment already exists on the development machine. After a fresh clone, create it with `py -V:3.14 -m venv .venv`, then select `.venv\Scripts\python.exe` using **Python: Select Interpreter** in VS Code. Python 3.14.5 was tested; no third-party packages are needed.
+
+## Current step: user inputs and person records
+
+Enter the population, initially infectious count, age boundaries, age-group population counts, transmission percentage, mortality percentage, and random seed. Select **Create population**.
+
+- Enter percentages as 4 or 50 in the form. The model stores them as fractions, 0.04 or 0.50.
+- Age-group counts must add up to the population. The equal-split button creates an illustrative toy distribution; you can replace every count.
+- The model creates a separate record for each person, with an ID, age group, disease state, and vaccination status. It currently assigns age groups rather than exact ages.
+- Initially infectious people are selected with a local random generator. Identical settings and seed reproduce that selection.
+- **Download scenario** exports the settings used to create the displayed population. Editing the form clears the previous result until you create it again.
+
+For the default 200-person example with one initially infectious person, the starting state is **199 susceptible, 0 exposed, 1 infectious, 0 recovered, 0 dead**. S, E, I, R, and D stand for those five states. All people start unvaccinated.
+
+This increment initializes day 0. Transmission and mortality are recorded inputs for the upcoming disease-spread step. Days, infections, recoveries, deaths, and vaccines have not been advanced yet. The prototype supports 1–10,000 people and does not import country/city data yet.
+
+## Clean project layout
+
+| Path | Purpose |
+| --- | --- |
+| `app.py` | Starts the local server. |
+| `src/model.py` | Validates settings and creates person records. |
+| `web/index.html` | The browser form and result display. |
+| `scenarios/example.json` | Versioned example settings; edit inputs through the browser during normal use. |
+| `tests/` | Population accounting and reproducibility checks. |
+| `docs/` | Project plan, data-source requirements, and attribution. |
+
+`.venv`, `.vscode`, caches, secrets, and generated outputs are ignored by Git. Local VS Code settings also hide environment and editor folders in Explorer. The `.bat` and `.ps1` scripts inside `.venv` are generated Python environment helpers. Our run command uses the interpreter directly, so activation is optional. See [Python environments](https://docs.python.org/3.14/library/venv.html).
+
+The old Day 1 reader, duplicate walkthrough/progress documents, and empty data/output placeholders have been removed. Their history remains in Git. Useful source code, examples, tests, planning, and attribution stay tracked.
+
+## Verification and progress
 
 ```powershell
-.\.venv\Scripts\python.exe day1.py
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-Python 3.14.5 was used to check this starter. No third-party packages are needed. Calling the executable directly avoids needing to activate the environment.
+Checks cover population totals, age distributions, initial infection limits, repeatable seeds, independent randomness, and invalid inputs. Browser checks cover creation, custom settings, count errors, reset, equal splitting, and scenario download.
 
-Expected output includes:
+Each assistant change to a project file is verified, committed separately with a short relevant message, and pushed to https://github.com/ryanneefeng/epidemic-scenario-lab . Local ignored settings stay on the development machine.
 
-```text
-Loaded settings. No epidemic has been simulated yet.
-Planned population: 200 people
-Age groups: 0-19, 20-39, 40-59, 60-79, 80+
-Transmission per active encounter: 4%
-Death probability per infection: 5%
-```
-
-This first script loads and checks settings. Transmission applies to an encounter between an infectious person and a susceptible person. Mortality applies to someone who becomes infected. Neither percentage is an observed result from a simulation yet. The disease engine, vaccine allocation, data import, and interactive interface come in later increments.
-
-## First exercise
-
-Open `scenarios/example.json`. Change transmission from `0.04` to `0.20` and mortality from `0.05` to `0.50`. Rerun to see 20% and 50%. Probabilities use fractions: `0.05` means 5%; `5` is invalid.
-
-Age lower bounds `[0, 20, 40, 60, 80]` describe groups 0-19, 20-39, 40-59, 60-79, and 80+. These groups are examples and can be changed. Real data will require compatible source bins.
-
-You can load another scenario:
-
-```powershell
-.\.venv\Scripts\python.exe day1.py scenarios/example.json
-```
-
-Read `day1.py` from top to bottom: arguments select the file, JSON becomes a dictionary, validation checks inputs, and print statements show settings. Next session introduces person states and event timing.
-
-## Save progress
-
-Your public repository is https://github.com/ryanneefeng/epidemic-scenario-lab . The existing MIT license is preserved.
-
-```powershell
-git diff
-git add scenarios/example.json
-git commit -m "Explore transmission and mortality scenario inputs"
-git push
-```
-
-Code, scenario files, and documentation belong in Git. Local environments, raw downloads, and generated results are ignored.
-
-## Project files
-
-- `day1.py`: runnable scenario reader.
-- `scenarios/`: editable inputs.
-- `docs/PROJECT_PLAN.md`: milestones and modeling assumptions.
-- `docs/START_HERE.md`: beginner guide to the files, inputs, and output.
-- `docs/SESSION_LOG.md`: progress and exercises.
-- `docs/DATA_SOURCES.md`: contact and demographic import requirements.
-- `docs/ATTRIBUTION.md`: original team and new contributions.
-- `data/raw/` and `results/`: local data and outputs.
+Next: define disease timers and one synchronous disease-spread step. See [the project plan](docs/PROJECT_PLAN.md), [data sources](docs/DATA_SOURCES.md), and [attribution](docs/ATTRIBUTION.md). The midterm paper is reference material; its parameters and age groups are not requirements for this project.
