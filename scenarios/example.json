@@ -1,8 +1,11 @@
 {
-  "name": "Day 1 illustrative respiratory-disease scenario",
+  "name": "Example hypothetical disease",
   "illustrative_only": true,
   "simulation_population": 200,
   "age_lower_bounds_years": [0, 20, 40, 60, 80],
+  "age_group_counts": [40, 40, 40, 40, 40],
   "transmission_probability_per_active_encounter": 0.04,
-  "death_probability_per_infection": 0.05
+  "death_probability_per_infection": 0.05,
+  "initial_infectious": 1,
+  "random_seed": 42
 }
