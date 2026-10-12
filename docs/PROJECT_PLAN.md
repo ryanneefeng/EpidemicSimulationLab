@@ -44,7 +44,7 @@ No disease events have advanced yet. Disease probabilities remain user-selected 
 
 ## Run and next exercise
 
-From C:\endemic-scenerio-lab, run `.\.venv\Scripts\python.exe app.py --example` for immediate output, or `app.py` for interactive questions. See README for setup.
+From C:\endemic-scenerio-lab, run `python model.py --example` for immediate output, or `python model.py` for interactive questions. See README for setup.
 
 Try Canada with 20 simulated people, three initially infectious, 20% transmission, and 50% mortality. Confirm 17 susceptible and three infectious, and explain why changing disease probabilities does not change day 0. Inspect the country age shares and contact table.
 

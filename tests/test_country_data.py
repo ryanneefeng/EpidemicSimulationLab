@@ -71,7 +71,7 @@ class CountryDataTests(unittest.TestCase):
 
     def test_terminal_interaction(self):
         result = subprocess.run(
-            [sys.executable, str(ROOT / "app.py")],
+            [sys.executable, str(ROOT / "model.py")],
             input="INVALID\nCAN\n20\n10\n3\n20\n50\n42\n", text=True,
             capture_output=True, cwd=ROOT, timeout=10,
         )
@@ -85,7 +85,7 @@ class CountryDataTests(unittest.TestCase):
 
     def test_example_finishes_without_input(self):
         result = subprocess.run(
-            [sys.executable, str(ROOT / "app.py"), "--example"],
+            [sys.executable, str(ROOT / "model.py"), "--example"],
             text=True, capture_output=True, cwd=ROOT, timeout=10,
         )
         self.assertEqual(result.returncode, 0, result.stderr)

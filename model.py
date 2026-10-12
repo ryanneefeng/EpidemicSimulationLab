@@ -98,11 +98,11 @@ def main():
         scenario, population, matrix = country_scenario(country, settings)
         show_results(country, validate_scenario(scenario), population, matrix)
     except EOFError:
-        parser.exit(1, "Input unavailable. Use VS Code's Terminal, or run app.py --example.\n")
+        parser.exit(1, "Input unavailable. Use VS Code's Terminal, or run python model.py --example.\n")
     except KeyboardInterrupt:
         print("\nCancelled.")
     except FileNotFoundError as error:
-        parser.exit(1, f"Missing file: {error.filename}. Run prepare_data.py to restore the country data.\n")
+        parser.exit(1, f"Missing file: {error.filename}. Run python prepare_data.py to restore the country data.\n")
     except (OSError, ValueError, KeyError) as error:
         parser.exit(1, f"Could not create the population: {error}\n")
 

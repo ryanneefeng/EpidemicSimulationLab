@@ -4,28 +4,21 @@ A configurable epidemic and vaccine-allocation modeling project. Work through th
 
 ## Run in VS Code
 
-Choose **Terminal > New Terminal**, then run this first example:
+Open `C:\endemic-scenerio-lab` in VS Code, choose **Terminal > New Terminal**, and run:
 
 ```powershell
-Set-Location "C:\endemic-scenerio-lab"
-.\.venv\Scripts\python.exe app.py --example
-```
-
-It prints results immediately and exits. No browser or local server is needed.
-
-To enter your own settings, run:
-
-```powershell
-.\.venv\Scripts\python.exe app.py
+python model.py
 ```
 
 Answer each terminal question; press Enter to keep its default. Choose a country, simulated population size, age-group width, initially infectious count, transmission percentage, mortality percentage, and random seed. Age-group population counts are calculated from the selected country. Enter percentages as 20 or 50; the model stores 0.20 or 0.50.
 
-List the available countries with `app.py --list-countries`. Run a saved example for another country with `app.py --example --country CAN`. Full country names also work when quoted.
+For a quick example with no questions, run `python model.py --example`. It prints results immediately and exits.
 
-Use the VS Code terminal for interactive questions. An output-only panel cannot accept answers. If a previous browser server is still running in a terminal, press Ctrl+C before running this version. The old localhost link is no longer used.
+List available countries with `python model.py --list-countries`. Run another country's saved example with `python model.py --example --country CAN`. Full country names also work when quoted.
 
-The existing `.venv` works on this development machine. After a fresh clone, create it with `py -V:3.14 -m venv .venv`, then select `.venv\Scripts\python.exe` using **Python: Select Interpreter**. Python 3.14.5 was tested. All code uses Python's standard library.
+Use the VS Code terminal for interactive questions. An output-only panel cannot accept answers. The program prints its questions directly in the terminal.
+
+Python is already installed on this development machine. The current code uses only Python's standard library, so these commands work without activating `.venv`. Python 3.14.5 was tested. The optional local environment can remain for future dependencies.
 
 ## Read the output
 
@@ -48,18 +41,18 @@ These are published historical inputs: UN WPP 2019 revision demographics for 202
 
 Ten-year groups are the default: 0-9, 10-19, 20-29, 30-39, 40-49, 50-59, 60-69, and 70+. The final group respects the source contact data's 75+ limit. Five-year groups keep 75+; twenty-year groups end in 60+. Original demographic bins remain in the CSV.
 
-To rebuild the prepared files, run `.\.venv\Scripts\python.exe prepare_data.py`. It downloads pinned public source files only when absent and verifies their checksums. Use `prepare_data.py --offline` when those raw files already exist. Raw downloads are ignored by Git and hidden locally in VS Code.
+To rebuild the prepared files, run `python prepare_data.py`. It downloads pinned public source files only when absent and verifies their checksums. Use `python prepare_data.py --offline` when those raw files already exist. Raw downloads are ignored by Git and hidden locally in VS Code.
 
 The data comes from [Prem's repository](https://github.com/kieshaprem/synthetic-contact-matrices). See [data details](docs/DATA_SOURCES.md) and [attribution](docs/ATTRIBUTION.md).
 
 ## Project files and checks
 
-`app.py` handles terminal questions and output. `src/model.py` creates person records. `src/country_data.py` loads and combines country data. `prepare_data.py` rebuilds the CSV files. `scenarios/example.json` holds example settings. `tests/` checks the mathematics and terminal behavior; `docs/` explains the plan and sources.
+`model.py` starts the program and handles terminal questions and output. `src/model.py` creates person records. `src/country_data.py` loads and combines country data. `prepare_data.py` rebuilds the CSV files. `scenarios/example.json` holds example settings. `tests/` checks the mathematics and terminal behavior; `docs/` explains the plan and sources.
 
 Environment/editor folders and caches are hidden and ignored. Generated Python environment scripts inside `.venv` support the interpreter; they are not project code. The browser prototype was removed from the current files and remains in Git history.
 
 ```powershell
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+python -m unittest discover -s tests -v
 ```
 
-Related changes are verified together and committed at substantial milestones with a short message, then pushed to https://github.com/ryanneefeng/epidemic-scenario-lab . Next: define disease durations and one synchronous spread step. See [the plan](docs/PROJECT_PLAN.md).
+Related changes are verified together and committed at substantial milestones with a short message, then pushed to https://github.com/ryanneefeng/EpidemicSimulationLab . Next: define disease durations and one synchronous spread step. See [the plan](docs/PROJECT_PLAN.md).
