@@ -34,12 +34,16 @@ def main():
 
     groups = [f"{low}-{high - 1}" for low, high in zip(bounds, bounds[1:])]
     groups.append(f"{bounds[-1]}+")
-    print(scenario["name"])
-    print(f"Simulated population: {population}")
+    print(f"Scenario: {scenario['name']}")
+    print("Loaded settings. No epidemic has been simulated yet.")
+    print(f"Planned population: {population} people")
     print("Age groups: " + ", ".join(groups))
-    print(f"Transmission per active encounter: {scenario[probability_names[0]]:.0%}")
-    print(f"Death probability per infection: {scenario[probability_names[1]]:.0%}")
-    print("Scenario settings loaded. The epidemic engine is the next increment.")
+    print(f"Transmission per active encounter: {scenario[probability_names[0]] * 100:g}%")
+    print("  Applies when an infectious person encounters a susceptible person.")
+    print(f"Death probability per infection: {scenario[probability_names[1]] * 100:g}%")
+    print("  Applies to people who become infected, not the whole population.")
+    print("These probabilities describe chances, not guaranteed counts.")
+    print("Next: create people and track their disease states.")
 
 
 if __name__ == "__main__":
