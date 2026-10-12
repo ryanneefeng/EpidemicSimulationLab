@@ -13,6 +13,8 @@ class PopulationTests(unittest.TestCase):
     def setUp(self):
         path = Path(__file__).resolve().parents[1] / "scenarios/example.json"
         self.scenario = json.loads(path.read_text(encoding="utf-8"))
+        self.scenario["age_lower_bounds_years"] = [0, 20, 40, 60, 80]
+        self.scenario["age_group_counts"] = [40, 40, 40, 40, 40]
 
     def test_population_and_age_accounting(self):
         people = create_population(self.scenario)

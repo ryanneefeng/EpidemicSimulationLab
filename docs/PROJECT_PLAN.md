@@ -1,61 +1,51 @@
 # Current project plan
 
-Updated October 12, 2026. Day 1 of approximately 40 working sessions over 20 active weeks, at 3-4 hours/week (60-80 hours). A broader version may take 24 weeks or longer. Sessions are learning/work blocks, not consecutive calendar days.
+Updated October 12, 2026. Approximately 40 working sessions over 20 active weeks, at 3-4 hours/week (60-80 hours). Sessions are work blocks, not consecutive calendar days.
 
-## Goal and scope correction
+## Goal
 
-Build a configurable epidemic and vaccine-allocation scenario tool, intended for epidemiologists and public-sector analysts. The midterm is related prior work only. Neither its age groups nor its disease parameters are inherited requirements.
+Build a configurable epidemic and vaccine-allocation scenario tool. The midterm is related prior work; its age groups and parameters are examples. Develop understandable terminal inputs, outputs, and mathematics before returning to a browser interface.
 
-Keep disease scenarios, geography/demographics, contact assumptions, vaccination strategies, and simulation/display settings separate. Choose settings in the browser form and download them as JSON. Versioned examples use the same validation. Define transmission as a probability per active encounter and mortality as a probability per infection. Permit 0-100% values, including severe hypothetical scenarios. Later allow age-specific probabilities, time-to-death assumptions, durations, vaccine protection, and waning.
+Country selection supplies population age shares and contact matrices. Users choose simulation size and hypothetical disease settings. Later browser controls can use sliders for initially infectious count, transmission, and mortality; age-group counts will come from geographic data.
 
 ## Milestones
 
 | Weeks | Work | Useful result |
 | --- | --- | --- |
-| 1-2 | VS Code/Git setup, browser inputs, person records, event specification | Editable inputs and a tiny traceable example |
-| 3-5 | Demographic/contact file import, metadata, age-bin aggregation | One validated country contact preset and locality demographic input |
+| 1-2 | Terminal setup, country datasets, person states, event specification | Country-based starting population and traceable outputs |
+| 3-5 | Extend demographic/contact imports, metadata, city inputs | Updated country presets and locality demographic input |
 | 6-8 | Stochastic epidemic engine, vaccine supply and basic allocations | Reproducible static-network experiments |
 | 9-12 | Persistent relationships, recurring encounters, temporary edges | Changing network with measured mixing and repetition |
-| 13-15 | Extend the browser with simulation controls and plots | Play/pause/reset, network and curves |
-| 16-18 | Repeated-run comparisons and sensitivity | Infection/death distributions; documented intervention tradeoffs |
-| 19-20 | Validation, explanations, refinements, buffer | First useful research prototype with reproducible runs |
+| 13-15 | Browser interface, sliders, playback, plots | Interactive display of the verified model |
+| 16-18 | Repeated-run comparisons and sensitivity | Infection/death distributions and intervention tradeoffs |
+| 19-20 | Validation, explanations, refinements, buffer | Reproducible research prototype |
 
-Aim for a tiny disease simulation earlier than week 6 while the import pipeline develops; the table describes milestone completion, not a delay before code can run. At each session make one small working increment. Later extensions: broader geography, detailed setting-specific network calibration, 12-month waning/reinfection scenarios, larger populations, optimization, and polished deployment. Calibration and independent validation for operational policy use add work beyond this prototype.
+Aim for a tiny disease simulation before week 6. Each session should add one understandable modeling step. Commit related work at substantial milestones. Operational policy use requires calibration and independent validation beyond this prototype.
 
-## Mathematical commitments
+## Mathematics
 
-- Person disease states: S, E, I, R, D. Vaccination is separate and persists in records after breakthrough infection.
-- Begin with explicit timers and toy durations; add justified duration distributions. Do not silently replace durations with geometric/exponential waits.
-- Synchronous event order prevents within-step instantaneous infection chains. Playback speed does not change mathematical step size.
-- Relationship existence and daily interaction are separate. Temporary ties form/expire independently of animation. Fit/check a contact budget across layers.
-- Start with 200-500 simulated people; retain geography's original population data separately. Rendering and population representation are distinct. No extrapolation by multiplying toy outcomes.
-- Show infections and deaths separately. Any weighted objective has explicit user priorities.
-- Record configurations, seeds, independent random streams, input versions, and software environment. Keep extinction runs. Separate stochastic variability, uncertainty in estimated means, and parameter sensitivity.
-- Validate accounting, probability ranges, timers, self/duplicate contacts, vaccine limits, and sensible limiting cases.
+- Person disease states: S, E, I, R, D. Vaccination is recorded separately.
+- Transmission is a probability per active encounter; mortality is a probability per infection. Both accept 0-100%.
+- Begin with explicit disease timers and toy durations, then add justified distributions.
+- Synchronous event order prevents within-step instantaneous infection chains.
+- Relationship existence and daily interaction are separate. Fit/check a contact budget across layers.
+- Keep national population counts separate from a small synthetic population. Validate age-bin aggregation and contact reciprocity before building networks.
+- Show infections and deaths separately. Weighted objectives use explicit user priorities.
+- Record configurations, seeds, data versions, and environment. Keep extinction runs and distinguish stochastic variability from parameter uncertainty.
+- Check accounting, probability ranges, timers, self/duplicate contacts, vaccine limits, and sensible limiting cases.
 
-## Completed
+## Current state
 
-- Reviewed the original paper and appendix; preserved team attribution.
-- Revised scope after the user clarified configurable disease/age inputs and geographic importing as central requirements.
-- Confirmed Python 3.14.5, Git, VS Code, and the Python extension are installed.
-- Added a local browser form for editable population, age groups, disease probabilities, and random seed.
-- Created individual person records and reproducible initial infectious selections; checked population accounting and invalid inputs.
-- Verified the browser form, error messages, reset, equal splitting, and scenario download.
-- Consolidated setup instructions in README; ignored local editor settings and generated folders. Git records progress at substantial milestones.
-- Inspected the Prem contact repository structure; no data imported yet.
+The terminal accepts country, simulation size, age-group width, initially infectious count, disease probabilities, and seed. It creates individual records and prints day-0 state totals, demographic shares, and an aggregated contact table. The prototype supports 1-10,000 simulated people.
 
-## Current assumptions and questions
+Prepared datasets contain 201 demographic locations and 177 country/area contact matrices. Demographics are 2020 projections from UN WPP 2019, paired with Prem et al. (2021) synthetic contacts. Country selection offers the 177 locations with both inputs. Ten-year groups are the default, ending in 70+ to respect the source 75+ contact group. Original data resolution is preserved.
 
-The example JSON is invented. Its five equally populated age groups, 4% per-encounter transmission, and 5% mortality are editable demonstrations, not empirical estimates. Users choose age-group counts directly; real demographic importing comes later. Disease durations, mortality timing, and vaccine eligibility still need specification. Source age boundaries will constrain supported data aggregation.
+No disease events have advanced yet. Disease probabilities remain user-selected hypothetical settings. Disease durations, mortality timing, and vaccine eligibility need specification. City data and newer demographic revisions remain future imports.
 
-The current model creates day 0 only. Transmission and mortality are saved settings; no disease events have advanced. The form supports up to 10,000 people for this prototype.
+## Run and next exercise
 
-Public repository: https://github.com/ryanneefeng/epidemic-scenario-lab . The working folder is C:\endemic-scenerio-lab. Python experience is unspecified, so explain code from basics.
+From C:\endemic-scenerio-lab, run `.\.venv\Scripts\python.exe app.py --example` for immediate output, or `app.py` for interactive questions. See README for setup.
 
-## Run and next task
+Try Canada with 20 simulated people, three initially infectious, 20% transmission, and 50% mortality. Confirm 17 susceptible and three infectious, and explain why changing disease probabilities does not change day 0. Inspect the country age shares and contact table.
 
-From the repository: `.\.venv\Scripts\python.exe app.py` (Windows), then open http://127.0.0.1:8000 . See README for environment recreation and VS Code interpreter selection.
-
-Current learning task: create 20 people in the browser, choose age-group counts totaling 20, and set three initially infectious people. Confirm 17 susceptible and three infectious. Change transmission to 20% and mortality to 50%; explain why the initial totals stay the same.
-
-Next: define disease timers and hand-trace S/E/I/R/D progression on a fixed graph, then implement one synchronous step. Data milestone: inspect one real contact file before writing an importer.
+Next: agree on exposed/infectious durations and mortality timing, hand-trace progression on a fixed graph, then implement one synchronous disease-spread step. Data details and aggregation assumptions are in DATA_SOURCES.md.
