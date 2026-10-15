@@ -5,7 +5,7 @@ import random
 import unittest
 
 from src.model import DiseaseState as State, Person, validate_scenario
-from src.simulation import advance_disease, infection_probabilities, validate_contacts
+from src.simulation import advance_disease, infection_probabilities, simulate, validate_contacts
 
 
 def toy_scenario(**changes):
@@ -86,6 +86,62 @@ class TransmissionTests(unittest.TestCase):
         for matrix in ([[1, 2]], [[-1]], [[float("nan")]], [[float("inf")]], [[True]]):
             with self.subTest(matrix=matrix), self.assertRaises(ValueError):
                 validate_contacts(matrix, 1)
+
+
+class SimulationTests(unittest.TestCase):
+    def test_synchronous_timing_with_certain_exposure(self):
+        result = simulate(toy_scenario(latent_days=1, infectious_days=1), [[10000]])
+        self.assertEqual([(r["S"], r["E"], r["I"], r["R"]) for r in result["history"]],
+                         [(2, 0, 1, 0), (0, 2, 0, 1), (0, 0, 2, 1), (0, 0, 0, 3)])
+
+    def test_accounting_flows_and_absorbing_states(self):
+        result = simulate(toy_scenario(simulation_population=60, age_group_counts=[60],
+                                       death_probability_per_infection=0.5), [[4]])
+        for previous, row in zip(result["history"], result["history"][1:]):
+            self.assertEqual(sum(row[s] for s in "SEIRD"), 60)
+            self.assertTrue(all(row[s] >= 0 for s in "SEIRD"))
+            self.assertEqual(row["S"], previous["S"] - row["new_exposures"])
+            self.assertEqual(row["E"], previous["E"] + row["new_exposures"] - row["new_infectious"])
+            self.assertEqual(row["I"], previous["I"] + row["new_infectious"] - row["new_recoveries"] - row["new_deaths"])
+            self.assertEqual(row["R"], previous["R"] + row["new_recoveries"])
+            self.assertEqual(row["D"], previous["D"] + row["new_deaths"])
+
+    def test_no_spread_limits(self):
+        for changes, matrix in (({"initial_infectious": 0}, [[5]]),
+                                ({"transmission_probability_per_active_encounter": 0}, [[5]]),
+                                ({}, [[0]])):
+            scenario = toy_scenario(**changes)
+            result = simulate(scenario, matrix)
+            self.assertEqual(result["metrics"]["total_infections"], scenario["initial_infectious"])
+            self.assertEqual(result["metrics"]["unresolved"], 0)
+
+    def test_repeatability_and_independent_random_streams(self):
+        scenario = toy_scenario(simulation_population=60, age_group_counts=[60], simulation_days=100)
+        state = random.getstate()
+        recovered = simulate(scenario, [[4]])
+        self.assertEqual(recovered, simulate(scenario, [[4]]))
+        fatal = simulate({**scenario, "death_probability_per_infection": 1}, [[4]])
+        self.assertEqual(random.getstate(), state)
+        self.assertEqual([(r["S"], r["E"], r["I"]) for r in recovered["history"]],
+                         [(r["S"], r["E"], r["I"]) for r in fatal["history"]])
+        self.assertEqual(fatal["metrics"]["deaths"], fatal["metrics"]["total_infections"])
+        self.assertEqual(recovered["metrics"]["deaths"], 0)
+
+    def test_horizon_censoring_and_single_person(self):
+        result = simulate(toy_scenario(simulation_days=1), [[0]])
+        self.assertEqual(result["metrics"]["unresolved"], 1)
+        self.assertIsNone(result["metrics"]["extinction_day"])
+        result = simulate(toy_scenario(simulation_population=1, age_group_counts=[1]), [[5]])
+        self.assertEqual(result["metrics"]["total_infections"], 1)
+
+    def test_one_day_infections_match_binomial_expectation(self):
+        scenario = toy_scenario(simulation_population=10000, age_group_counts=[10000],
+                                initial_infectious=1000, simulation_days=1)
+        result = simulate(scenario, [[5]])
+        risk = 1 - math.exp(-0.2 * 5 * 1000 / 9999)
+        mean = 9000 * risk
+        sd = math.sqrt(9000 * risk * (1 - risk))
+        self.assertLess(abs(result["history"][1]["new_exposures"] - mean), 6 * sd)
 
 
 if __name__ == "__main__":

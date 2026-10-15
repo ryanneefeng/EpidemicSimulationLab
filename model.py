@@ -6,6 +6,7 @@ from pathlib import Path
 
 from src.country_data import country_scenario, load_countries
 from src.model import age_labels, create_population, summarize_population, validate_scenario
+from src.simulation import simulate
 
 
 ROOT = Path(__file__).resolve().parent
@@ -41,7 +42,7 @@ def ask_number(label, default, minimum, maximum, whole=True, allowed=None):
             print(options)
 
 
-def show_results(country, scenario, population, matrix):
+def show_results(country, scenario, population, matrix, show_contacts=False):
     people = create_population(scenario)
     summary = summarize_population(people, scenario)
     labels = age_labels(scenario["age_lower_bounds_years"])
@@ -56,13 +57,33 @@ def show_results(country, scenario, population, matrix):
         print(f"{label:<12} {count:>14,} {share:>7.2f}% {group['population']:>10} {group['I']:>12}")
     print("\nDay 0: " + ", ".join(f"{name}={count}" for name, count in summary["states"].items()))
     print("S=susceptible, E=exposed, I=infectious, R=recovered, D=dead.")
-    print("Everyone starts unvaccinated. No disease events have advanced yet.")
-    print("\nSynthetic daily contacts (Prem et al., 2021; overall, all locations)")
-    print("Rows: participant age. Columns: age of the people contacted.")
-    print(f"{'Age':<8}" + "".join(f"{label:>8}" for label in labels))
-    for label, row in zip(labels, matrix):
-        print(f"{label:<8}" + "".join(f"{value:>8.2f}" for value in row))
-    print("These contact averages are inputs for a later spread model.")
+    print("Everyone starts unvaccinated. Disease settings are hypothetical.")
+    print("Ages 75+ use the source 75-79 contact rates before wider age aggregation.")
+    if show_contacts:
+        print("\nSynthetic daily contacts (Prem et al., 2021; overall, all locations)")
+        print("Rows: participant age. Columns: age of the people contacted.")
+        print(f"{'Age':<8}" + "".join(f"{label:>8}" for label in labels))
+        for label, row in zip(labels, matrix):
+            print(f"{label:<8}" + "".join(f"{value:>8.2f}" for value in row))
+    print(f"\nRunning up to {scenario['simulation_days']} days: "
+          f"{scenario['latent_days']} exposed days, {scenario['infectious_days']} infectious days.", flush=True)
+    result = simulate(scenario, matrix)
+    metrics = result["metrics"]
+    interval = max(7, (metrics["end_day"] + 19) // 20)
+    print("\nSelected daily totals (new E = newly infected during the preceding day)")
+    print(f"{'Day':>5} {'S':>7} {'E':>7} {'I':>7} {'R':>7} {'D':>7} {'New E':>7}")
+    for row in result["history"]:
+        if row["day"] <= 7 or row["day"] % interval == 0 or row["day"] in (metrics["end_day"], metrics["peak_day"]):
+            print(f"{row['day']:>5}" + "".join(f"{row[key]:>8}" for key in ("S", "E", "I", "R", "D", "new_exposures")))
+    print(f"\nEver infected, including initial cases: {metrics['total_infections']:,} "
+          f"({metrics['attack_fraction']:.1%} of simulated people).")
+    print(f"Deaths so far: {metrics['deaths']:,}. "
+          f"Peak infectious: {metrics['peak_infectious']:,} on day {metrics['peak_day']} (first peak).")
+    if metrics["unresolved"]:
+        print(f"Horizon reached: {metrics['unresolved']:,} infections remain unresolved; outcomes are incomplete.")
+    else:
+        print(f"No exposed or infectious people remain on day {metrics['end_day']}.")
+    print("One random realization; use repeated runs to assess variation.")
     print("\nFinished. You can change the settings and run again.")
 
 
@@ -71,8 +92,9 @@ def main():
     parser.add_argument("--example", action="store_true", help="Print results with saved defaults; no questions.")
     parser.add_argument("--country", help="Country code or full name to use as the default.")
     parser.add_argument("--list-countries", action="store_true", help="List countries with both datasets, then exit.")
+    parser.add_argument("--contacts", action="store_true", help="Also print the age contact matrix.")
     args = parser.parse_args()
-    print("Epidemic Scenario Lab - terminal setup", flush=True)
+    print("Epidemic Scenario Lab - daily SEIRD simulation", flush=True)
     try:
         countries = load_countries()
         if args.list_countries:
@@ -94,9 +116,13 @@ def main():
             for label, key in (("Transmission (%)", "transmission_probability_per_active_encounter"), ("Mortality (%)", "death_probability_per_infection")):
                 settings[key] = ask_number(label, settings[key] * 100, 0, 100, whole=False) / 100
             settings["random_seed"] = ask_number("Random seed", settings["random_seed"], 0, 2147483647)
+            for label, key in (("Exposed days before infectious", "latent_days"),
+                               ("Infectious days before recovery/death", "infectious_days"),
+                               ("Maximum days to simulate", "simulation_days")):
+                settings[key] = ask_number(label, settings[key], 1, 3650)
         settings["name"] = f"{country['name']} scenario"
         scenario, population, matrix = country_scenario(country, settings)
-        show_results(country, validate_scenario(scenario), population, matrix)
+        show_results(country, validate_scenario(scenario), population, matrix, args.contacts)
     except EOFError:
         parser.exit(1, "Input unavailable. Use VS Code's Terminal, or run python model.py --example.\n")
     except KeyboardInterrupt:
@@ -104,7 +130,7 @@ def main():
     except FileNotFoundError as error:
         parser.exit(1, f"Missing file: {error.filename}. Run python prepare_data.py to restore the country data.\n")
     except (OSError, ValueError, KeyError) as error:
-        parser.exit(1, f"Could not create the population: {error}\n")
+        parser.exit(1, f"Could not run the scenario: {error}\n")
 
 
 if __name__ == "__main__":

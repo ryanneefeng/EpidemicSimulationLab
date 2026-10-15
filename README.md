@@ -26,9 +26,9 @@ Python is already installed on this development machine. The current code uses o
 
 The default example creates 200 people with the United States' 2020 age distribution. Whole-person rounding produces 24, 26, 28, 27, 24, 25, 23, and 23 people across the eight groups. Country population counts remain separate from these small simulation counts.
 
-Day 0 contains **199 susceptible, 0 exposed, 1 infectious, 0 recovered, and 0 dead**. Everyone starts unvaccinated. Disease probabilities are stored inputs; transmission, recovery, death, and vaccine events come in the next modeling steps.
+Day 0 contains **199 susceptible, 0 exposed, 1 infectious, 0 recovered, and 0 dead**. The daily SEIRD model then advances until no infections remain or the selected horizon is reached. Exposed and infectious durations are editable whole days (illustrative defaults: 2 and 5). Mortality is sampled once when an infectious period ends; vaccination is not implemented.
 
-The contact table shows expected daily contacts: participant ages down the rows, contacted ages across the columns. A decimal value is an average over people. These averages will guide later encounters; they are not infection probabilities or a list of unique relationships.
+The terminal prints selected daily totals, total infections, deaths, and the first peak infectious count. Unresolved infections at the horizon are reported explicitly. Add `--contacts` to display expected daily contacts: participant ages down rows and contacted ages across columns. Those averages determine infection risks through the derivation below.
 
 ## Country datasets
 
@@ -67,4 +67,4 @@ Environment/editor folders and caches are hidden and ignored. Generated Python e
 python -m unittest discover -s tests -v
 ```
 
-Related changes are verified together and committed at substantial milestones with a short message, then pushed to https://github.com/ryanneefeng/EpidemicSimulationLab . Next: define disease durations and one synchronous spread step. See [the plan](docs/PROJECT_PLAN.md).
+Related changes are verified together and committed at substantial milestones with a short message, then pushed to https://github.com/ryanneefeng/EpidemicSimulationLab . The next Day 2 milestone compares repeated stochastic runs.

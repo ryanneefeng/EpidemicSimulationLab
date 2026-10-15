@@ -72,7 +72,7 @@ class CountryDataTests(unittest.TestCase):
     def test_terminal_interaction(self):
         result = subprocess.run(
             [sys.executable, str(ROOT / "model.py")],
-            input="INVALID\nCAN\n20\n10\n3\n20\n50\n42\n", text=True,
+            input="INVALID\nCAN\n20\n10\n3\n20\n50\n42\n2\n5\n60\n", text=True,
             capture_output=True, cwd=ROOT, timeout=10,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -82,6 +82,7 @@ class CountryDataTests(unittest.TestCase):
         self.assertIn("Mortality: 50%", result.stdout)
         self.assertIn("S=17, E=0, I=3, R=0, D=0", result.stdout)
         self.assertIn("Finished.", result.stdout)
+        self.assertIn("Ever infected, including initial cases:", result.stdout)
 
     def test_example_finishes_without_input(self):
         result = subprocess.run(
