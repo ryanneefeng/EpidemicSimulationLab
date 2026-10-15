@@ -20,6 +20,7 @@ class Person:
     age_group: str
     state: DiseaseState = DiseaseState.SUSCEPTIBLE
     vaccinated: bool = False
+    days_in_state: int = 0
 
 
 def validate_scenario(scenario):
@@ -55,6 +56,10 @@ def validate_scenario(scenario):
     seed = scenario.get("random_seed")
     if type(seed) is not int or seed < 0:
         raise ValueError("The random seed must be a nonnegative whole number.")
+    for key in ("latent_days", "infectious_days", "simulation_days"):
+        value = scenario.get(key)
+        if type(value) is not int or not 1 <= value <= 3650:
+            raise ValueError(f"{key} must be a whole number from 1 to 3650.")
     return {**scenario, "name": name.strip()}
 
 

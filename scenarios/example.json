@@ -7,5 +7,8 @@
   "transmission_probability_per_active_encounter": 0.04,
   "death_probability_per_infection": 0.05,
   "initial_infectious": 1,
-  "random_seed": 42
+  "random_seed": 42,
+  "latent_days": 2,
+  "infectious_days": 5,
+  "simulation_days": 60
 }
