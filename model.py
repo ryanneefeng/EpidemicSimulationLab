@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from src.country_data import country_scenario, load_countries
+from src.experiments import print_study, run_study, save_study
 from src.model import age_labels, create_population, summarize_population, validate_scenario
 from src.simulation import simulate
 
@@ -89,7 +90,9 @@ def show_results(country, scenario, population, matrix, show_contacts=False):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--example", action="store_true", help="Print results with saved defaults; no questions.")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--example", action="store_true", help="Run saved defaults; no questions.")
+    mode.add_argument("--study", action="store_true", help="Compare four disease settings over 20 seeds; save results.")
     parser.add_argument("--country", help="Country code or full name to use as the default.")
     parser.add_argument("--list-countries", action="store_true", help="List countries with both datasets, then exit.")
     parser.add_argument("--contacts", action="store_true", help="Also print the age contact matrix.")
@@ -105,6 +108,21 @@ def main():
         settings = json.loads((ROOT / "scenarios/example.json").read_text(encoding="utf-8"))
         if args.country:
             settings["country"] = choose_country(countries, args.country)["code"]
+        if args.study:
+            country = choose_country(countries, settings["country"])
+            settings["simulation_days"] = 120
+            scenario, _, matrix = country_scenario(country, settings)
+            print(f"Study: {country['name']}, {scenario['simulation_population']} people, "
+                  f"{scenario['age_group_width']}-year groups, {scenario['latent_days']} exposed days, "
+                  f"{scenario['infectious_days']} infectious days.", flush=True)
+            print("Running 4 settings x 20 seeds (0-19), up to 120 days each...", flush=True)
+            result = run_study(scenario, matrix)
+            print_study(result)
+            directory = ROOT / "results" / f"day2_{country['code']}"
+            save_study(result, directory)
+            print(f"\nSaved replicates.csv and summary.json in {directory}")
+            print("Generated study files are replaced when you rerun this country's study; Git ignores them.")
+            return
         if args.example:
             country = choose_country(countries, settings["country"])
         else:

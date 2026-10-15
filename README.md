@@ -16,6 +16,8 @@ Answer each terminal question; press Enter to keep its default. Choose a country
 
 For a quick example with no questions, run `python model.py --example`. It prints results immediately and exits.
 
+For the Day 2 sensitivity study, run `python model.py --study`. It compares 4%/20% transmission and 5%/50% mortality with 20 seeds per combination and a 120-day horizon. It saves replicate results and input checksums under ignored `results/day2_USA/`; rerunning replaces that country's generated study files. `--country CAN` selects another country. Early extinctions remain in the analysis.
+
 List available countries with `python model.py --list-countries`. Run another country's saved example with `python model.py --example --country CAN`. Full country names also work when quoted.
 
 Use the VS Code terminal for interactive questions. An output-only panel cannot accept answers. The program prints its questions directly in the terminal.
