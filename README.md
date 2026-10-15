@@ -47,6 +47,16 @@ To rebuild the prepared files, run `python prepare_data.py`. It downloads pinned
 
 The data comes from [Prem's repository](https://github.com/kieshaprem/synthetic-contact-matrices). See [data details](docs/DATA_SOURCES.md) and [attribution](docs/ATTRIBUTION.md).
 
+## Day 2 transmission derivation
+
+The spread kernel assumes independent Poisson exposure opportunities during each one-day interval. Let $C_{ij}$ be contacts per participant per day, $I_j(t)$ the infectious count, and $n_j$ the initial simulated age-group size. A susceptible person cannot contact themself, so their pool has $n_j-\mathbf{1}_{i=j}$ people. With empty pools contributing zero:
+
+$$\mu_i(t)=\sum_{j:n_j-\mathbf{1}_{i=j}>0} C_{ij}\frac{I_j(t)}{n_j-\mathbf{1}_{i=j}},\qquad q_i(t)=1-\exp[-p\mu_i(t)].$$
+
+Here $p$ is transmission probability per encounter and $q_i$ is infection probability per day. If $K\sim\mathrm{Poisson}(\mu_i)$, then $P(\text{no infection})=E[(1-p)^K]=\exp(-p\mu_i)$. This follows from the [Poisson probability mass function](https://itl.nist.gov/div898/handbook/eda/section3/eda366j.htm); choosing Poisson opportunities is a provisional project assumption. In particular, $p=1$ does not guarantee an encounter.
+
+Pool sizes remain fixed after deaths: opportunities directed toward deceased people are lost rather than reassigned. Empty simulated age groups also lose their contact opportunities. This convention makes mortality affect outcomes but not subsequent exposure pressure when infectious duration is fixed. It is a simplifying assumption, not an empirical behavioral claim.
+
 ## Project files and checks
 
 `model.py` starts the program and handles terminal questions and output. `src/model.py` creates person records. `src/country_data.py` loads and combines country data. `prepare_data.py` rebuilds the CSV files. `scenarios/example.json` holds example settings. `tests/` checks the mathematics and terminal behavior; `docs/` explains the plan and sources.

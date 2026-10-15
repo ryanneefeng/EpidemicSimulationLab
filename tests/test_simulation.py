@@ -1,10 +1,11 @@
 """Check disease timing, spread probabilities, and population accounting."""
 
+import math
 import random
 import unittest
 
 from src.model import DiseaseState as State, Person, validate_scenario
-from src.simulation import advance_disease
+from src.simulation import advance_disease, infection_probabilities, validate_contacts
 
 
 def toy_scenario(**changes):
@@ -55,6 +56,36 @@ class DiseaseTimingTests(unittest.TestCase):
             for value in (0, -1, 1.5, True, 3651, None):
                 with self.subTest(key=key, value=value), self.assertRaises(ValueError):
                     validate_scenario(toy_scenario(**{key: value}))
+
+
+class TransmissionTests(unittest.TestCase):
+    def test_row_orientation_and_self_exclusion(self):
+        risks = infection_probabilities([[2, 3], [4, 5]], [5, 10], [4, 8], [1, 2], 0.2)
+        self.assertAlmostEqual(risks[0], 1 - math.exp(-0.2 * (2 / 4 + 3 * 2 / 10)))
+        self.assertAlmostEqual(risks[1], 1 - math.exp(-0.2 * (4 / 5 + 5 * 2 / 9)))
+
+    def test_poisson_derivation_matches_explicit_sum(self):
+        mean, probability = 2.5, 0.2
+        no_infection = sum(math.exp(-mean) * mean ** k / math.factorial(k)
+                           * (1 - probability) ** k for k in range(50))
+        risk = infection_probabilities([[mean]], [2], [1], [1], probability)[0]
+        self.assertAlmostEqual(risk, 1 - no_infection, places=14)
+
+    def test_zero_sources_and_empty_groups(self):
+        self.assertEqual(infection_probabilities([[5]], [1], [1], [0], 1), [0])
+        self.assertEqual(infection_probabilities([[5]], [2], [1], [1], 0), [0])
+        self.assertEqual(infection_probabilities([[0]], [2], [1], [1], 1), [0])
+        self.assertEqual(infection_probabilities([[5, 5], [5, 5]], [2, 0], [0, 0], [2, 0], 1), [0, 0])
+
+    def test_certain_transmission_still_requires_an_encounter(self):
+        risk = infection_probabilities([[1]], [2], [1], [1], 1)[0]
+        self.assertAlmostEqual(risk, 1 - math.exp(-1))
+        self.assertLess(risk, 1)
+
+    def test_invalid_matrix(self):
+        for matrix in ([[1, 2]], [[-1]], [[float("nan")]], [[float("inf")]], [[True]]):
+            with self.subTest(matrix=matrix), self.assertRaises(ValueError):
+                validate_contacts(matrix, 1)
 
 
 if __name__ == "__main__":

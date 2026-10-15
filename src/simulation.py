@@ -1,6 +1,32 @@
 """Advance a daily, stochastic SEIRD model."""
 
+import math
+
 from src.model import DiseaseState as State
+
+
+def validate_contacts(matrix, size):
+    if len(matrix) != size or any(len(row) != size for row in matrix):
+        raise ValueError("Contact matrix must match the scenario's age groups.")
+    if any(type(value) not in (int, float) or not math.isfinite(value) or value < 0
+           for row in matrix for value in row):
+        raise ValueError("Contact rates must be finite and nonnegative.")
+
+
+def infection_probabilities(matrix, counts, susceptible, infectious, probability):
+    """Daily risks under Poisson exposure opportunities; exclude oneself."""
+    risks = []
+    for i, row in enumerate(matrix):
+        if susceptible[i] == 0:
+            risks.append(0.0)
+            continue
+        infectious_contacts = 0.0
+        for j, rate in enumerate(row):
+            pool = counts[j] - (i == j)
+            if pool > 0:
+                infectious_contacts += rate * (infectious[j] / pool)
+        risks.append(-math.expm1(-probability * infectious_contacts) if probability else 0.0)
+    return risks
 
 
 def advance_disease(people, scenario, exposed_ids, outcome_rng):
