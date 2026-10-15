@@ -20,7 +20,9 @@
   },
   "demographics": "UN World Population Prospects 2019, Rev. 1; both sexes, 1 July 2020.",
   "population_conversion": "Source thousands multiplied by 1000; native five-year groups through 100+ retained.",
-  "contacts": "Prem et al. (2021), synthetic; overall setting, all contact locations; five-year groups ending in 75+.",
+  "contacts": "Prem et al. (2021), synthetic; overall setting, all contact locations; source coverage 0-79 despite CSV label 75+.",
+  "oldest_age_approximation": "Ryan-approved: retain the 75-79 contact row and column unchanged as one 75+ group; sum demographic ages 75 through 100+ before aggregation.",
+  "age_coverage_reference": "https://doi.org/10.1371/journal.pcbi.1012454",
   "orientation": "C[i,j] = mean daily contacts an age-i participant has with age-j people.",
   "country_name_aliases": {
     "State of Palestine": "PSE",

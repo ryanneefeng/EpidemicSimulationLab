@@ -16,7 +16,7 @@ Country names join to ISO3 codes through the countrycode dictionary, pinned at c
 
 Source: Kiesha Prem and collaborators (2021), *Projecting contact matrices in 177 geographical regions: an update and comparison with empirical data for the COVID-19 era*, [paper](https://doi.org/10.1371/journal.pcbi.1009098) and [repository](https://github.com/kieshaprem/synthetic-contact-matrices).
 
-The repository also contains a CSV at `generate_synthetic_matrices/output/syntheticmatrices/synthetic_contacts_2021.csv`. Its [export code](https://github.com/kieshaprem/synthetic-contact-matrices/blob/7fcb6985dbc3070cdcb3e5daa5f6b26ce2605d69/generate_synthetic_matrices/codes/contact_4_world_storage.r) labels the oldest group **75+**. This CSV can be imported without an R reader.
+The repository also contains a CSV at `generate_synthetic_matrices/output/syntheticmatrices/synthetic_contacts_2021.csv`. Its export labels the oldest group **75+**, but the [2024 correction](https://doi.org/10.1371/journal.pcbi.1012454) clarifies that source coverage stops at age 80. Treat that source bin as 75-79. This CSV can be imported without an R reader.
 
 `data/contacts.csv` keeps overall geography and all contact locations: 177 complete 16 by 16 matrices, stored as one row per country and age pair. Columns are country_code, participant_age_lower, contact_age_lower, and mean_daily_contacts. Bounds are 0, 5, ..., 75; the final bound means 75+. The importer explicitly handles the upstream spelling `age_cotactee`.
 
@@ -24,7 +24,9 @@ C[i,j] means average daily contacts an age-i participant has with age-j people. 
 
 ## Combine compatible ages
 
-First combine demographic ages 75-79 through 100+ into 75+ to match the contact matrix. Then group both datasets at width 5, 10, or 20. The oldest modeled group is respectively 75+, 70+, or 60+. An existing 75+ contact bin cannot support a new boundary at 80.
+Ryan's approved approximation (Day 2): use the source's final 75-79 row and column unchanged for a single **75+** group. Sum demographic ages 75-79 through 100+ into that group. Do not duplicate the contact column or multiply its rates by the added population. These are assumed rates for 75+, not measured rates for ages 80+.
+
+Then group both datasets at width 5, 10, or 20. The oldest modeled group is respectively 75+, 70+, or 60+; the latter two include the approximated 75+ bin. This imported matrix cannot support a separate contact boundary at 80. Age aggregation preserves contact volume under the extended population weights, not an observed contact total for older adults.
 
 Population counts add across source bins. Contact columns add; participant rows use country population weights. For new groups A and B:
 

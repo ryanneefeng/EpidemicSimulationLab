@@ -2,6 +2,8 @@
 
 A configurable epidemic and vaccine-allocation modeling project. Work through the mathematics with terminal inputs and readable outputs. Country data supplies the age distribution.
 
+The majority of the codebase was built through working with OpenAI Codex. Ryan Feng independently conceived and approved the mathematical backbone, research-data selection, and modeling direction. New Day 2 implementation assumptions remain provisional until reviewed; see [attribution](docs/ATTRIBUTION.md).
+
 ## Run in VS Code
 
 Open `C:\endemic-scenerio-lab` in VS Code, choose **Terminal > New Terminal**, and run:
@@ -39,7 +41,7 @@ The contact table shows expected daily contacts: participant ages down the rows,
 
 These are published historical inputs: UN WPP 2019 revision demographics for 2020, paired with Prem et al. (2021) synthetic contacts. Current population revisions and city data remain future imports. Country selection currently offers the 177 locations with both datasets.
 
-Ten-year groups are the default: 0-9, 10-19, 20-29, 30-39, 40-49, 50-59, 60-69, and 70+. The final group respects the source contact data's 75+ limit. Five-year groups keep 75+; twenty-year groups end in 60+. Original demographic bins remain in the CSV.
+Ten-year groups are the default: 0-9, 10-19, 20-29, 30-39, 40-49, 50-59, 60-69, and 70+. Ryan approved reusing the source 75-79 contact row and column for everyone aged 75+, including all older demographic bins. Five-year groups keep that 75+ group; ten- and twenty-year aggregation end in 70+ and 60+. This is an explicit approximation, since the [source correction](https://doi.org/10.1371/journal.pcbi.1012454) identifies an age-80 coverage limit.
 
 To rebuild the prepared files, run `python prepare_data.py`. It downloads pinned public source files only when absent and verifies their checksums. Use `python prepare_data.py --offline` when those raw files already exist. Raw downloads are ignored by Git and hidden locally in VS Code.
 

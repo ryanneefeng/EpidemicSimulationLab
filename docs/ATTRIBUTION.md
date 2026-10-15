@@ -4,7 +4,9 @@ Related prior work: *Simulation of Vaccine Deployment for a Hypothetical Omega V
 
 The paper credits joint initial planning, Ryan's research and parameter interpretation, Sophia's report writing and LaTeX organization, and Thomas's modeling, MATLAB implementation, and stress testing. Preserve these contributions. The paper serves as reference; its parameters, age groups, optimization weights, and model structure are not requirements for this project.
 
-The new configurable scenario tool, person records, country import pipeline, and documentation are subsequent developments prepared with Codex assistance, October 12, 2026. Record further contributions through Git history and attribution updates.
+The majority of this project's codebase was built through Ryan Feng's work with OpenAI Codex. Ryan independently conceived and approved the mathematical backbone, research-data selection, and modeling direction. Codex contributed implementation, debugging, tests, derivations, and documentation under his direction. This disclosure does not transfer credit for the underlying research datasets or the earlier team's work.
+
+New implementation-level assumptions proposed by Codex on Day 2 (daily Poisson exposure opportunities, fixed stage durations, and mortality timing) are provisional working choices for Ryan to review. The 75+ contact approximation was explicitly approved by Ryan. Git history records implementation milestones; it does not by itself establish human approval of each new scientific assumption.
 
 Contact data: Kiesha Prem and collaborators, *Projecting contact matrices in 177 geographical regions: an update and comparison with empirical data for the COVID-19 era* (2021), [paper](https://doi.org/10.1371/journal.pcbi.1009098), [source repository](https://github.com/kieshaprem/synthetic-contact-matrices).
 

@@ -21,6 +21,7 @@ def load_countries():
                 raise ValueError(f"Invalid demographics for {row['country']}")
             if row["country_code"] in countries:
                 raise ValueError("Duplicate demographic country code.")
+            # Use the final source contact bin for everyone aged 75+.
             countries[row["country_code"]] = {
                 "code": row["country_code"], "name": row["country"], "year": int(row["year"]),
                 "population": counts[:15] + [sum(counts[15:])],
